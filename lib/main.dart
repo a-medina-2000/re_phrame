@@ -152,14 +152,15 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
         title: const Text('Brightness Settings'),
       ),
-      bottomNavigationBar: ElevatedButton(
-        child: Text('Apply Changes'),
-        onPressed: () {
-        },
-      ),
       body: ListView(
         children: [
-          SimpleFX(imageSource: Image.file(image!)),
+          ElevatedButton(
+            child: const Text('Apply Changes'),
+            onPressed: () {
+            },
+          ),
+
+          image?.path == null ? const Text('No img'): Image.file(image!),
           Row(
             children: [
               Flexible(
@@ -192,7 +193,7 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
                         });
                       },
                     ),
-                    const Text('Hue'),
+                    const Text('Color'),
                   ],
                 ),
               ),
@@ -219,6 +220,4 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
       ),
     );
   }
-
-
 }
