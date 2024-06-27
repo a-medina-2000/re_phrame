@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:gal/gal.dart';
 import 'package:simple_fx/simple_fx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:screenshot/screenshot.dart';
+import 'dart:typed_data';
 
 void main() {
   runApp(const MyApp());
@@ -130,24 +131,27 @@ class DisplayImage extends StatelessWidget {
 
 class BrightnessAdjustment extends StatefulWidget {
   File? image;
+  late Uint8List? editedImage;
+
   BrightnessAdjustment(this.image, {super.key});
 
   @override
   State<BrightnessAdjustment> createState() => _BrightnessAdjustmentState(image);
 }
 
-class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
+class _BrightnessAdjustmentState extends State<BrightnessAdjustment> {
+
   double _brightValue = 0;
   double _hueValue = 0;
   double _saturationValue = 100;
 
+  late Uint8List? editedImage;
   File? image;
 
   ScreenshotController screenshotController = ScreenshotController();
-  Uint8List? _imageEdit;
 
   _BrightnessAdjustmentState(this.image) {
-    image = this.image;
+    image = image;
   }
 
   @override
@@ -162,17 +166,17 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
           ElevatedButton(
             child: const Text('Save Image'),
               onPressed: () {
-                screenshotController.capture().then((Uint8List? eImage) {
-                  //Capture Done
-                  setState(() {
-                    _imageEdit = eImage;
-                  });
-                }).catchError((onError) {
-                  print(onError);
+              screenshotController.capture().then((edit) {
+                setState(() {
+                  editedImage = edit!;
                 });
+              });
               }
           ),
-
+          ElevatedButton(
+              onPressed: _saveLocalImage,
+              child: const Text('Send to Gallery'),
+          ),
           Screenshot(
               controller: screenshotController,
               child: Stack(
@@ -245,4 +249,8 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
       ),
     );
   }
+
+  _saveLocalImage() async {
+    Gal.putImageBytes(editedImage!);
+    }
 }
