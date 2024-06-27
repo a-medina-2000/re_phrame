@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:simple_fx/simple_fx.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
