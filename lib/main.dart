@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:simple_fx/simple_fx.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:screenshot/screenshot.dart';
 
 void main() {
   runApp(const MyApp());
@@ -69,14 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => displayImage(_image))
+          builder: (context) => DisplayImage(_image))
     );
   }
 }
 
-class displayImage extends StatelessWidget {
+class DisplayImage extends StatelessWidget {
   File? image;
-  displayImage(this.image, {super.key});
+  DisplayImage(this.image, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +138,13 @@ class BrightnessAdjustment extends StatefulWidget {
 
 class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
   double _brightValue = 0;
-  double _hueValue = 180;
+  double _hueValue = 0;
   double _saturationValue = 100;
+
   File? image;
+
+  ScreenshotController screenshotController = ScreenshotController();
+  Uint8List? _imageEdit;
 
   _BrightnessAdjustmentState(this.image) {
     image = this.image;
@@ -152,12 +160,32 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
       body: ListView(
         children: [
           ElevatedButton(
-            child: const Text('Apply Changes'),
-            onPressed: () {
-            },
+            child: const Text('Save Image'),
+              onPressed: () {
+                screenshotController.capture().then((Uint8List? eImage) {
+                  //Capture Done
+                  setState(() {
+                    _imageEdit = eImage;
+                  });
+                }).catchError((onError) {
+                  print(onError);
+                });
+              }
           ),
 
-          image?.path == null ? const Text('No img'): Image.file(image!),
+          Screenshot(
+              controller: screenshotController,
+              child: Stack(
+                children: [
+                  SimpleFX(imageSource: Image.file(image!),
+                    hueRotation: _hueValue,
+                    brightness: _brightValue,
+                    saturation: _saturationValue,
+                  ),
+                ],
+              )
+          ),
+
           Row(
             children: [
               Flexible(
@@ -190,7 +218,7 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment>{
                         });
                       },
                     ),
-                    const Text('Color'),
+                    const Text('Hue'),
                   ],
                 ),
               ),
