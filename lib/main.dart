@@ -6,6 +6,7 @@ import 'package:simple_fx/simple_fx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:typed_data';
+import 'package:image_painter/image_painter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -111,13 +112,11 @@ class DisplayImage extends StatelessWidget {
                 child: ElevatedButton(
                   child: const Icon(Icons.draw),
                   onPressed: () {
-                  },
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  child: const Icon(Icons.text_fields),
-                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DrawOverImage(image))
+                    );
                   },
                 ),
               ),
@@ -164,7 +163,7 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment> {
       body: ListView(
         children: [
           ElevatedButton(
-            child: const Text('Save Image'),
+            child: const Text('Save Edits'),
               onPressed: () {
               screenshotController.capture().then((edit) {
                 setState(() {
@@ -189,7 +188,6 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment> {
                 ],
               )
           ),
-
           Row(
             children: [
               Flexible(
@@ -249,8 +247,86 @@ class _BrightnessAdjustmentState extends State<BrightnessAdjustment> {
       ),
     );
   }
-
   _saveLocalImage() async {
     Gal.putImageBytes(editedImage!);
     }
 }
+
+class DrawOverImage extends StatefulWidget {
+  File? image;
+  late Uint8List? editedImage;
+
+  final imagePainterController = ImagePainterController();
+
+  ScreenshotController screenshotController = ScreenshotController();
+
+  DrawOverImage(this.image, {super.key});
+
+  @override
+  State<DrawOverImage> createState() => _DrawOverImageState(image);
+}
+
+class _DrawOverImageState extends State<DrawOverImage> {
+  File? image;
+  late Uint8List? editedImage;
+
+  final imagePainterController = ImagePainterController();
+
+  ScreenshotController screenshotController = ScreenshotController();
+
+  _DrawOverImageState(this.image) {
+    image = image;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        title: const Text('Text/Drawing Settings'),
+      ),
+      body: ListView(
+        children: [
+          ElevatedButton(
+              child: const Text('Save Edits'),
+              onPressed: () {
+                screenshotController.capture().then((edit) {
+                  setState(() {
+                    editedImage = edit!;
+                  });
+                });
+              }
+          ),
+          ElevatedButton(
+              onPressed: _sendToGallery,
+              child: const Text('Send to Gallery')
+          ),
+          Stack(
+                children: <Widget>[
+                  Screenshot(
+                      controller: screenshotController,
+                      child: Column(
+                        children: [
+                          Image.file(image!),
+                          const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: TextField(
+                            decoration: InputDecoration(
+                            border: UnderlineInputBorder(),
+                            ),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ),
+                ],
+              ),
+        ],
+      ),
+    );
+  }
+  void _sendToGallery() async {
+    Gal.putImageBytes(editedImage!);
+  }
+}
+

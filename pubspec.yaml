@@ -38,6 +38,7 @@ dependencies:
   simple_fx: ^1.0.1
   screenshot: ^3.0.0
   gal: ^2.3.0
+  image_painter: ^0.7.1
 
 dev_dependencies:
   flutter_test:
