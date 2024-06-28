@@ -283,7 +283,7 @@ class _DrawOverImageState extends State<DrawOverImage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        title: const Text('Text/Drawing Settings'),
+        title: const Text('Text Settings'),
       ),
       body: ListView(
         children: [
